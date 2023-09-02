@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using TestAPI.Data;
 using TestAPI.Model;
@@ -73,6 +74,38 @@ namespace TestAPI.Controllers
         [Route("/updateOne")]
         public async Task<IActionResult> UpdateMovie([FromBody] Movie movie)
         {
+            IActionResult result = CommonUpdateLogic(movie);
+
+            return result;
+        }
+
+        [HttpPut]
+        [Route("/updateMany")]
+        public async Task<IActionResult> updateMany([FromBody] List<Movie> movies)
+        {
+            if (movies == null || !movies.Any())
+            {
+                return StatusCode(400, "Bad Content");
+            }
+            foreach (Movie movie in movies)
+            {
+                try
+                {
+                    IActionResult result = CommonUpdateLogic(movie);
+                }
+                catch
+                {
+                    return StatusCode(500, "Issue in updating the movie");
+                }
+
+
+            }
+            return Ok(movies);
+        }
+
+        // implementing a common update logic for the movie
+        private IActionResult CommonUpdateLogic(Movie movie)
+        {
             if (movie == null || movie.Name == null)
             {
                 return BadRequest("Bad Content");
@@ -91,10 +124,21 @@ namespace TestAPI.Controllers
             }
 
             _db.Movies.Update(movieInList);
-            await _db.SaveChangesAsync();
+            _db.SaveChanges();
             return Ok(movie);
+        }
 
-
+        private IActionResult CommonDeleteLogic(string movieName)
+        {
+            if (movieName == null)
+            {
+                return BadRequest(400);
+            }
+            Movie? movie = _db.Movies.FirstOrDefault(movie => movie.Name == movieName);
+            if (movie == null)
+            {
+                return BadRequest("No such movie found");
+            }
 
         }
     }
