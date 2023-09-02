@@ -62,7 +62,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Contributors
 
-- [Your Name](https://github.com/yourusername) - Maintainer
+- [Akhil Dabral](https://github.com/iakhildabral) - Maintainer
 
 Feel free to modify this README to include more project-specific details or instructions as needed. Enjoy working on your ASP.NET Core Web API project!
 
